@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const Users = require("./users-model");
+const restict = require("../middleware");
 
 const router = express.Router();
 
@@ -15,18 +16,17 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", restict.authenticate, async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const loggedUser = await Users.findUserBy({ username });
-    if (loggedUser && bcrypt.compareSync(password, loggedUser.password)) {
-      res.status(200).json({ message: `Welcome ${loggedUser.username}!` });
-    } else {
-      res.status(401).json({ message: "Invalid Credentials" });
-    }
+    res.status(200).json({ message: `Welcome ${req.user.username}!` });
   } catch (error) {
     res.status(500).json("Cannot login");
   }
 });
+
+// router.get("/users", async (req, res) => {
+//   try {
+//   } catch (error) {}
+// });
 
 module.exports = router;
