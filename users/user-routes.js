@@ -24,9 +24,13 @@ router.post("/login", restict.authenticate, async (req, res) => {
   }
 });
 
-// router.get("/users", async (req, res) => {
-//   try {
-//   } catch (error) {}
-// });
+router.get("/users", restict.authenticate, async (req, res) => {
+  try {
+    let users = await Users.getAllUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json("Error getting users");
+  }
+});
 
 module.exports = router;
