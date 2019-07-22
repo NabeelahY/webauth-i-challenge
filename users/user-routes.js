@@ -1,14 +1,17 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
+const uuid = require("uuid");
+// const bcrypt = require("bcryptjs");
 const Users = require("./users-model");
 const restict = require("../middleware");
+const {encryptPassword} = require("../auth/auth")
 
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
   try {
     let user = req.body;
-    user.password = bcrypt.hashSync(req.body.password, 12);
+    // user.password = bcrypt.hashSync(req.body.password, 12);
+    user.password = encryptPassword(req.body.password, uuid(), 12);
     const newUser = await Users.add(user);
     res.status(201).json(newUser);
   } catch (error) {
