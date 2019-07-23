@@ -28,20 +28,10 @@ async function authenticate(req, res, next) {
 
 async function authenticateUser(req, res, next) {
   try {
-    const { username, password } = req.headers;
-
-    if (!username || !password) {
-      return res
-        .status(400)
-        .json({ message: "Username and password are required" });
+    if (req.session && req.session.user) {
+      next();
     } else {
-      const loggedUser = await Users.findUserBy({ username });
-      req.user = loggedUser;
-      if (req.user && compareHashed(password, req.user.password)) {
-        next();
-      } else {
-        res.status(401).json({ message: "Unauthorized!" });
-      }
+      res.status(401).json("Unauthorized!!!");
     }
   } catch (error) {
     return res.status(400).json({ message: "Server error" });
