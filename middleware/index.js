@@ -5,9 +5,8 @@ const { compareHashed } = require("../auth/auth");
 module.exports = { authenticate, authenticateUser };
 async function authenticate(req, res, next) {
   try {
-    
     const { username, password } = req.body;
-    
+
     if (!username || !password) {
       return res
         .status(400)
@@ -16,6 +15,7 @@ async function authenticate(req, res, next) {
       const loggedUser = await Users.findUserBy({ username });
       req.user = loggedUser;
       if (req.user && compareHashed(password, req.user.password)) {
+        req.session.user = req.user;
         next();
       } else {
         res.status(401).json({ message: "Unauthorized!" });
@@ -29,7 +29,7 @@ async function authenticate(req, res, next) {
 async function authenticateUser(req, res, next) {
   try {
     const { username, password } = req.headers;
-    
+
     if (!username || !password) {
       return res
         .status(400)
